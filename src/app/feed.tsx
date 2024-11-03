@@ -64,7 +64,16 @@ export function Feed() {
   }, [index, items, isLoading]);
 
   if (!items) {
-    return <Loading message="Carregando o feed..." />;
+    return (
+      <Loading
+        message="Carregando o feed..."
+        tooLongLoading={{
+          10000: "Isso está demorando um pouco mais do que o esperado...",
+          20000: "Ainda estamos aqui. Aguenta mais um pouquinho...",
+          30000: "Parece que tivemos um problema, que tal reiniciar o app?",
+        }}
+      />
+    );
   }
 
   return (
