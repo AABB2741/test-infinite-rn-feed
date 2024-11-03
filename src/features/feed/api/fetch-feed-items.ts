@@ -1,4 +1,10 @@
 import { faker } from "@faker-js/faker";
+import { Image } from "react-native";
+
+import type { FeedItem } from "@/schemas/feed-item";
+import type { ImageFeedItem } from "@/schemas/feed-item/image";
+
+import { getCustomFeedItems } from "../get-custom-feed-items";
 
 interface FetchFeedItemsRequest {
   itemsCount: number;
@@ -8,28 +14,45 @@ interface FetchFeedItemsRequestResponse {
   feedItems: FeedItem[];
 }
 
-export interface FeedItem {
-  id: string;
-  author: {
-    name: string;
-    id: string;
-  };
-  type: "image";
-  contentUrl: string;
-}
-
 export async function fetchFeedItems({
   itemsCount,
 }: FetchFeedItemsRequest): Promise<FetchFeedItemsRequestResponse> {
-  const feedItems: FeedItem[] = Array.from({ length: itemsCount }).map(() => ({
-    id: faker.string.uuid(),
-    author: {
-      id: faker.string.uuid(),
-      name: faker.person.fullName(),
-    },
-    type: "image",
-    contentUrl: faker.image.url(),
-  }));
+  try {
+    const feedItems: FeedItem[] = await Promise.all(
+      Array.from({ length: itemsCount }).map(async () => {
+        const imageUrl = faker.image.url();
 
-  return { feedItems };
+        const [width, height] = await new Promise<[number, number]>(
+          (resolve, reject) => {
+            Image.getSize(
+              imageUrl,
+              (width, height) => resolve([width, height]),
+              reject,
+            );
+          },
+        );
+
+        const item: ImageFeedItem = {
+          id: faker.string.uuid(),
+          type: "image",
+          author: {
+            id: faker.string.uuid(),
+            name: faker.person.fullName(),
+          },
+          imageUrl,
+          width,
+          height,
+        };
+
+        return item;
+      }),
+    );
+
+    const { feedItems: customFeedItems } = await getCustomFeedItems(1);
+
+    return { feedItems: [...feedItems, ...customFeedItems] };
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }

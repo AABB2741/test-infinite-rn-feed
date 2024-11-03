@@ -1,75 +1,69 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  Image,
-  ScrollView,
-  Text,
   useWindowDimensions,
   View,
   type ListRenderItemInfo,
 } from "react-native";
+import SwiperFlatList from "react-native-swiper-flatlist";
 
 import { Loading } from "@/components/loading";
+import type { FeedItem } from "@/schemas/feed-item";
 
-import { resize } from "@/utils/resize";
-import SwiperFlatList from "react-native-swiper-flatlist";
-import {
-  fetchFeedItems,
-  type FeedItem,
-} from "../features/feed/api/fetch-feed-items";
+import { fetchFeedItems } from "@/features/feed/api/fetch-feed-items";
+import { FeedItemRenderer } from "@/features/feed/components/feed-item-renderer";
 import { styles } from "./styles";
-
-interface FeedContent extends FeedItem {
-  width: number;
-  height: number;
-}
 
 export function Feed() {
   const { width: windowWidth } = useWindowDimensions();
 
   const [index, setIndex] = useState(0);
-  const [feedContent, setFeedContent] = useState<FeedContent[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [items, setItems] = useState<FeedItem[] | null>(null);
 
-  const loadFeedItems = useCallback(async () => {
-    console.log("Carregando itens do feed");
+  const loadMoreFeedItems = useCallback(async () => {
+    console.log("Carregando itens do feed...");
+    setIsLoading(true);
 
     const { feedItems } = await fetchFeedItems({
       itemsCount: 10,
     });
 
-    const content: FeedContent[] = await Promise.all(
-      feedItems.map(async (feedItem) => {
-        const dimensions = await new Promise<{ width: number; height: number }>(
-          (resolve, reject) => {
-            Image.getSize(
-              feedItem.contentUrl,
-              (width, height) => resolve({ width, height }),
-              reject,
-            );
-          },
-        );
-
-        return {
-          ...feedItem,
-          width: dimensions.width,
-          height: dimensions.height,
-        } satisfies FeedContent;
-      }),
-    );
-
-    setFeedContent((prevState) => {
+    setItems((prevState) => {
       if (!prevState) {
-        return content;
+        console.log(
+          "Colocando itens no feed:",
+          feedItems.map((item) => item.id.slice(0, 5)).join(", "),
+        );
+        return feedItems;
       }
 
-      return [...prevState, ...content];
+      console.log("Adicionando itens no feed!");
+      console.log(
+        "Anteriores:",
+        prevState.map((item) => item.id.slice(0, 5)).join(", "),
+      );
+      console.log(
+        "Novos:",
+        feedItems.map((item) => item.id.slice(0, 5)).join(", "),
+      );
+      return [...prevState, ...feedItems];
     });
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    loadFeedItems();
-  }, []);
+    if (isLoading) {
+      return;
+    }
 
-  if (!feedContent) {
+    const shouldLoadMoreItems = !items || items.length - index <= 3;
+
+    if (shouldLoadMoreItems) {
+      loadMoreFeedItems();
+    }
+  }, [index, items, isLoading]);
+
+  if (!items) {
     return <Loading message="Carregando o feed..." />;
   }
 
@@ -77,45 +71,16 @@ export function Feed() {
     <View style={styles.container}>
       <SwiperFlatList
         index={index}
-        onChangeIndex={({ index }) => {
-          setIndex(index);
-
-          const shouldLoadMoreItems = feedContent.length - index <= 3;
-          if (shouldLoadMoreItems) {
-            loadFeedItems();
-          }
-        }}
-        data={feedContent}
-        renderItem={({ item, index }: ListRenderItemInfo<FeedContent>) => {
-          const { newWidth, newHeight } = resize({
-            from: {
-              width: item.width,
-              height: item.height,
-            },
-            to: {
-              width: windowWidth,
-            },
-          });
-
+        onChangeIndex={({ index }) => setIndex(index)}
+        data={items}
+        renderItem={({ item, index }: ListRenderItemInfo<FeedItem>) => {
           return (
             <View
               style={[styles.contentContainer, { width: windowWidth }]}
               key={item.id}
             >
-              <Text style={styles.contentAuthor}>
-                {item.author.name} - Index: {index}
-              </Text>
-
-              <ScrollView style={styles.contentImageContainer}>
-                <Image
-                  style={styles.contentImage}
-                  source={{
-                    uri: item.contentUrl,
-                    width: newWidth,
-                    height: newHeight,
-                  }}
-                />
-              </ScrollView>
+              {item.type === "image" && <FeedItemRenderer.Image {...item} />}
+              {item.type === "custom" && item.render()}
             </View>
           );
         }}

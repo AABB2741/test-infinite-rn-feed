@@ -11,10 +11,4 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 24,
   },
-  contentAuthor: {},
-  contentImageContainer: {
-    flexGrow: 0,
-    width: "100%",
-  },
-  contentImage: {},
 });
