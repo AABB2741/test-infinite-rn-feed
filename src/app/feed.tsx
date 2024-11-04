@@ -11,6 +11,7 @@ import type { FeedItem } from "@/schemas/feed-item";
 
 import { fetchFeedItems } from "@/features/feed/api/fetch-feed-items";
 import { FeedItemRenderer } from "@/features/feed/components/feed-item-renderer";
+import { getCustomFeedItems } from "@/features/feed/get-custom-feed-items";
 import { styles } from "./styles";
 
 export function Feed() {
@@ -28,26 +29,20 @@ export function Feed() {
       itemsCount: 10,
     });
 
-    setItems((prevState) => {
-      if (!prevState) {
-        console.log(
-          "Colocando itens no feed:",
-          feedItems.map((item) => item.id.slice(0, 5)).join(", "),
-        );
-        return feedItems;
-      }
+    // setItems((prevState) => {
+    //   if (!prevState) {
+    //     return feedItems;
+    //   }
 
-      console.log("Adicionando itens no feed!");
-      console.log(
-        "Anteriores:",
-        prevState.map((item) => item.id.slice(0, 5)).join(", "),
-      );
-      console.log(
-        "Novos:",
-        feedItems.map((item) => item.id.slice(0, 5)).join(", "),
-      );
-      return [...prevState, ...feedItems];
-    });
+    //   return [...prevState, ...feedItems];
+    // });
+    const { feedItems: customFeedItems } = await getCustomFeedItems(1);
+
+    const newFeedItems = [...feedItems, ...customFeedItems];
+
+    setItems((prevState) =>
+      prevState ? [...prevState, ...newFeedItems] : newFeedItems,
+    );
     setIsLoading(false);
   }, []);
 

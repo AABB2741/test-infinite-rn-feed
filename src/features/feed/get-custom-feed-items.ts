@@ -39,6 +39,10 @@ export async function getCustomFeedItems(count: number) {
           ...CUSTOM_FEED_ITEMS[key].content,
           id: faker.string.uuid(),
         });
+
+        if (feedItems.length >= count) {
+          break;
+        }
       }
     }
   }
