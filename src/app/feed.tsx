@@ -90,6 +90,7 @@ export function Feed() {
                 key={item.id}
               >
                 {item.type === "image" && <FeedItemRenderer.Image {...item} />}
+                {item.type === "video" && <FeedItemRenderer.Video {...item} />}
                 {item.type === "custom" && item.render()}
               </View>
             );
