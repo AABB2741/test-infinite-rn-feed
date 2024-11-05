@@ -1,9 +1,9 @@
-import { useMemo } from "react";
 import { Image, ScrollView, Text, useWindowDimensions } from "react-native";
 
 import type { ImageFeedItem } from "@/schemas/feed-item/image";
-import { resize } from "@/utils/resize";
 
+import { resize } from "@/utils/resize";
+import { useMemo } from "react";
 import { styles } from "./styles";
 
 interface ImageFeedItemRendererProps extends ImageFeedItem {}
