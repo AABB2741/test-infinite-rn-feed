@@ -1,16 +1,14 @@
 import { Text } from "react-native";
-import type { CustomItem } from "../../get-random-custom-feed-items";
 
-export const halloween_message: CustomItem = {
-  criteria: () => {
+import type { CustomFeedItem } from "@/schemas/feed-item/custom";
+
+export const halloween_message: Omit<CustomFeedItem, "id"> = {
+  criteria: async () => {
     const d = new Date();
-    return d.getDate() === 3 && d.getMonth() === 10;
+    return d.getDate() === 31 && d.getMonth() === 9;
   },
-  content: {
-    type: "custom",
-    render: HalloweenMessage,
-  },
-  canRepeat: false,
+  type: "custom",
+  render: HalloweenMessage,
 };
 
 export function HalloweenMessage() {
