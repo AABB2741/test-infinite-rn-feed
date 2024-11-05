@@ -1,62 +1,30 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  useWindowDimensions,
-  View,
-  type ListRenderItemInfo,
-} from "react-native";
-import SwiperFlatList from "react-native-swiper-flatlist";
+import { View } from "react-native";
 
 import { Loading } from "@/components/loading";
+import { fetchPosts } from "@/features/posts/api/fetch-posts";
 import type { Post } from "@/schemas/post";
 
-import { Indicator } from "@/components/indicator";
-import { fetchPosts } from "@/features/feed/api/fetch-posts";
-import { PostRenderer } from "@/features/feed/components/post-renderer";
-import { getRandomCustomPost } from "@/features/feed/get-random-custom-post";
+import { PostsFeed } from "@/features/posts/components/posts-feed";
 import { styles } from "./styles";
 
 export function Feed() {
-  const { width: windowWidth } = useWindowDimensions();
-
-  const [feedIndex, setFeedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [items, setItems] = useState<Post[] | null>(null);
+  const [posts, setPosts] = useState<Post[] | null>(null);
 
   const loadMorePosts = useCallback(async () => {
-    console.log("Carregando itens do feed...");
-    setIsLoading(true);
+    const { posts: newPosts } = await fetchPosts();
 
-    const { posts } = await fetchPosts({
-      itemsCount: 10,
-    });
-
-    const newPosts = [...posts];
-
-    const customPost = await getRandomCustomPost();
-
-    if (customPost) {
-      newPosts.push(customPost);
-    }
-
-    setItems((prevState) =>
+    setPosts((prevState) =>
       prevState ? [...prevState, ...newPosts] : newPosts,
     );
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    if (isLoading) {
-      return;
-    }
+    loadMorePosts();
+  }, []);
 
-    const shouldLoadMoreItems = !items || items.length - feedIndex <= 3;
-
-    if (shouldLoadMoreItems) {
-      loadMorePosts();
-    }
-  }, [feedIndex, items, isLoading]);
-
-  if (!items) {
+  if (!posts) {
     return (
       <Loading
         message="Carregando o feed..."
@@ -72,7 +40,12 @@ export function Feed() {
   return (
     <>
       <View style={styles.container}>
-        <SwiperFlatList
+        <PostsFeed
+          onRequestMorePosts={loadMorePosts}
+          isNextPageAvailable={!isLoading}
+          posts={posts}
+        />
+        {/* <SwiperFlatList
           index={feedIndex}
           onChangeIndex={({ index }) => setFeedIndex(index)}
           data={items}
@@ -93,15 +66,8 @@ export function Feed() {
               </View>
             );
           }}
-        />
+        /> */}
       </View>
-      {isLoading && feedIndex + 1 === items.length && (
-        <Indicator.Container position="absolute">
-          <Indicator.Text>
-            Estamos carregando os próximos itens...
-          </Indicator.Text>
-        </Indicator.Container>
-      )}
     </>
   );
 }

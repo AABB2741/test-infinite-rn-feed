@@ -17,9 +17,13 @@ interface FetchPostsRequestResponse {
 
 const mediaTypes = ["image", "video"] as const;
 
-export async function fetchPosts({
-  itemsCount,
-}: FetchPostsRequest): Promise<FetchPostsRequestResponse> {
+export async function fetchPosts(
+  config?: FetchPostsRequest,
+): Promise<FetchPostsRequestResponse> {
+  const { itemsCount = 10 } = config ?? {};
+
+  console.log("Fetching", itemsCount, "posts");
+
   const posts: Post[] = await Promise.all(
     Array.from({ length: itemsCount }).map(async () => {
       const interactions: InteractablePost = {

@@ -2,7 +2,7 @@ import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
-import { fetchPostComments } from "@/features/feed/api/fetch-post-comments";
+import { fetchPostComments } from "@/features/posts/api/fetch-post-comments";
 import type { PostComment } from "@/schemas/post/comment";
 import type { InteractablePost } from "@/schemas/post/interactable";
 
