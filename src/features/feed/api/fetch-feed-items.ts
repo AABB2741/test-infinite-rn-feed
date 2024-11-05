@@ -4,6 +4,7 @@ import { Image } from "react-native";
 import { getRandomVideoUrl } from "@/lib/faker/video-url";
 import type { FeedItem } from "@/schemas/feed-item";
 import type { ImageFeedItem } from "@/schemas/feed-item/image";
+import type { InteractableFeedItem } from "@/schemas/feed-item/interactable";
 import type { VideoFeedItem } from "@/schemas/feed-item/video";
 
 interface FetchFeedItemsRequest {
@@ -21,6 +22,11 @@ export async function fetchFeedItems({
 }: FetchFeedItemsRequest): Promise<FetchFeedItemsRequestResponse> {
   const feedItems: FeedItem[] = await Promise.all(
     Array.from({ length: itemsCount }).map(async () => {
+      const interactions: InteractableFeedItem = {
+        likesCount: faker.number.int({ max: 1_000_000 }),
+        dislikesCount: faker.number.int({ max: 1_000_000 }),
+        commentsCount: faker.number.int({ max: 1_000_000 }),
+      };
       const mediaType = faker.helpers.arrayElement(mediaTypes);
 
       if (mediaType === "image") {
@@ -37,6 +43,7 @@ export async function fetchFeedItems({
         );
 
         const item: ImageFeedItem = {
+          ...interactions,
           id: faker.string.uuid(),
           type: "image",
           author: {
@@ -53,6 +60,7 @@ export async function fetchFeedItems({
         const videoUrl = getRandomVideoUrl();
 
         const item: VideoFeedItem = {
+          ...interactions,
           id: faker.string.uuid(),
           type: "video",
           author: {

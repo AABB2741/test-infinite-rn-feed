@@ -1,7 +1,10 @@
-import type { VideoFeedItem } from "@/schemas/feed-item/video";
 import { ResizeMode, Video } from "expo-av";
 import { useEffect, useRef } from "react";
 import { Text } from "react-native";
+
+import type { VideoFeedItem } from "@/schemas/feed-item/video";
+
+import { FeedItemControls } from "../../feed-item-controls";
 import { styles } from "./styles";
 
 interface VideoFeedItemRendererProps extends VideoFeedItem {
@@ -12,6 +15,7 @@ export function VideoFeedItemRenderer({
   author,
   videoUrl,
   isVisible,
+  ...interactions
 }: VideoFeedItemRendererProps) {
   const videoRef = useRef<Video | null>(null);
 
@@ -30,8 +34,10 @@ export function VideoFeedItemRenderer({
         style={styles.video}
         shouldPlay={isVisible}
         useNativeControls
+        isLooping
         ref={videoRef}
       />
+      <FeedItemControls.Interactions {...interactions} />
     </>
   );
 }
