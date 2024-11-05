@@ -1,8 +1,10 @@
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useRef, useState } from "react";
-import { Text, TouchableOpacity } from "react-native";
+import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 
+import { fetchPostComments } from "@/features/feed/api/fetch-post-comments";
 import type { InteractableFeedItem } from "@/schemas/feed-item/interactable";
+import type { PostComment } from "@/schemas/post/comment";
 
 import { styles } from "./styles";
 
@@ -13,9 +15,35 @@ export function InteractionsFeedItemControl({
   dislikesCount,
   commentsCount,
 }: InteractionsFeedItemControl) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [comments, setComments] = useState<PostComment[] | null>(null);
   const [commentsContainerIndex, setCommentsContainerIndex] = useState(-1);
 
   const commentsContainerRef = useRef<BottomSheet | null>(null);
+
+  const areCommentsVisible = commentsContainerIndex !== -1;
+
+  const loadMoreComments = useCallback(async () => {
+    setIsLoading(true);
+
+    try {
+      const { postComments } = await fetchPostComments({ limit: 10 });
+
+      setComments((prevState) =>
+        prevState ? [...prevState, ...postComments] : postComments,
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLoading || !areCommentsVisible || comments) {
+      return;
+    }
+
+    loadMoreComments().catch(console.error);
+  }, [isLoading, areCommentsVisible, comments]);
 
   function handleSwitchCommentsVisibility() {
     setCommentsContainerIndex((prevState) => (prevState === -1 ? 1 : -1));
@@ -38,20 +66,21 @@ export function InteractionsFeedItemControl({
         index={commentsContainerIndex}
         ref={commentsContainerRef}
       >
-        <BottomSheetScrollView>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-          <Text>Comment 1</Text>
-        </BottomSheetScrollView>
+        <BottomSheetFlatList
+          data={comments ?? []}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.commentContainer}>
+              <Text>{item.message}</Text>
+            </View>
+          )}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => {
+            if (!isLoading) {
+              loadMoreComments();
+            }
+          }}
+        />
       </BottomSheet>
     </>
   );
