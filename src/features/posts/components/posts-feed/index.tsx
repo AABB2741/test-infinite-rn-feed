@@ -49,8 +49,6 @@ export function PostsFeed({
       isNextPageAvailable &&
       (!posts.length || distanceFromEndOfPosts <= loadMargin);
 
-    console.log("should", shouldRequestMorePosts);
-
     if (shouldRequestMorePosts) {
       onRequestMorePosts?.();
     }
