@@ -11,7 +11,7 @@ import type { FeedItem } from "@/schemas/feed-item";
 
 import { fetchFeedItems } from "@/features/feed/api/fetch-feed-items";
 import { FeedItemRenderer } from "@/features/feed/components/feed-item-renderer";
-import { getCustomFeedItems } from "@/features/feed/get-custom-feed-items";
+import { getRandomCustomFeedItem } from "@/features/feed/get-random-custom-feed-items";
 import { styles } from "./styles";
 
 export function Feed() {
@@ -29,16 +29,13 @@ export function Feed() {
       itemsCount: 10,
     });
 
-    // setItems((prevState) => {
-    //   if (!prevState) {
-    //     return feedItems;
-    //   }
+    const newFeedItems = [...feedItems];
 
-    //   return [...prevState, ...feedItems];
-    // });
-    const { feedItems: customFeedItems } = await getCustomFeedItems(1);
+    const customFeedItem = await getRandomCustomFeedItem();
 
-    const newFeedItems = [...feedItems, ...customFeedItems];
+    if (customFeedItem) {
+      newFeedItems.push(customFeedItem);
+    }
 
     setItems((prevState) =>
       prevState ? [...prevState, ...newFeedItems] : newFeedItems,
