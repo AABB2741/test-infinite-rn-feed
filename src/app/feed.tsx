@@ -7,12 +7,12 @@ import {
 import SwiperFlatList from "react-native-swiper-flatlist";
 
 import { Loading } from "@/components/loading";
-import type { FeedItem } from "@/schemas/feed-item";
+import type { Post } from "@/schemas/post";
 
 import { Indicator } from "@/components/indicator";
-import { fetchFeedItems } from "@/features/feed/api/fetch-feed-items";
-import { FeedItemRenderer } from "@/features/feed/components/feed-item-renderer";
-import { getRandomCustomFeedItem } from "@/features/feed/get-random-custom-feed-items";
+import { fetchPosts } from "@/features/feed/api/fetch-posts";
+import { PostRenderer } from "@/features/feed/components/post-renderer";
+import { getRandomCustomPost } from "@/features/feed/get-random-custom-post";
 import { styles } from "./styles";
 
 export function Feed() {
@@ -20,26 +20,26 @@ export function Feed() {
 
   const [feedIndex, setFeedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [items, setItems] = useState<FeedItem[] | null>(null);
+  const [items, setItems] = useState<Post[] | null>(null);
 
-  const loadMoreFeedItems = useCallback(async () => {
+  const loadMorePosts = useCallback(async () => {
     console.log("Carregando itens do feed...");
     setIsLoading(true);
 
-    const { feedItems } = await fetchFeedItems({
+    const { posts } = await fetchPosts({
       itemsCount: 10,
     });
 
-    const newFeedItems = [...feedItems];
+    const newPosts = [...posts];
 
-    const customFeedItem = await getRandomCustomFeedItem();
+    const customPost = await getRandomCustomPost();
 
-    if (customFeedItem) {
-      newFeedItems.push(customFeedItem);
+    if (customPost) {
+      newPosts.push(customPost);
     }
 
     setItems((prevState) =>
-      prevState ? [...prevState, ...newFeedItems] : newFeedItems,
+      prevState ? [...prevState, ...newPosts] : newPosts,
     );
     setIsLoading(false);
   }, []);
@@ -52,7 +52,7 @@ export function Feed() {
     const shouldLoadMoreItems = !items || items.length - feedIndex <= 3;
 
     if (shouldLoadMoreItems) {
-      loadMoreFeedItems();
+      loadMorePosts();
     }
   }, [feedIndex, items, isLoading]);
 
@@ -76,15 +76,15 @@ export function Feed() {
           index={feedIndex}
           onChangeIndex={({ index }) => setFeedIndex(index)}
           data={items}
-          renderItem={({ item, index }: ListRenderItemInfo<FeedItem>) => {
+          renderItem={({ item, index }: ListRenderItemInfo<Post>) => {
             return (
               <View
                 style={[styles.contentContainer, { width: windowWidth }]}
                 key={item.id}
               >
-                {item.type === "image" && <FeedItemRenderer.Image {...item} />}
+                {item.type === "image" && <PostRenderer.Image {...item} />}
                 {item.type === "video" && (
-                  <FeedItemRenderer.Video
+                  <PostRenderer.Video
                     {...item}
                     isVisible={index === feedIndex}
                   />

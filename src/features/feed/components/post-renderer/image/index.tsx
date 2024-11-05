@@ -1,21 +1,21 @@
 import { useMemo } from "react";
 import { Image, ScrollView, Text, useWindowDimensions } from "react-native";
 
-import type { ImageFeedItem } from "@/schemas/feed-item/image";
+import type { ImagePost } from "@/schemas/post/image";
 import { resize } from "@/utils/resize";
 
-import { FeedItemControls } from "../../feed-item-controls";
+import { PostControls } from "../../post-controls";
 import { styles } from "./styles";
 
-interface ImageFeedItemRendererProps extends ImageFeedItem {}
+interface ImagePostRendererProps extends ImagePost {}
 
-export function ImageFeedItemRenderer({
+export function ImagePostRenderer({
   author,
   imageUrl,
   width,
   height,
   ...interactions
-}: ImageFeedItemRendererProps) {
+}: ImagePostRendererProps) {
   const { width: windowWidth } = useWindowDimensions();
 
   const { imageWidth, imageHeight } = useMemo(() => {
@@ -48,7 +48,7 @@ export function ImageFeedItemRenderer({
           source={{ uri: imageUrl }}
         />
       </ScrollView>
-      <FeedItemControls.Interactions {...interactions} />
+      <PostControls.Interactions {...interactions} />
     </>
   );
 }

@@ -2,27 +2,27 @@ import { faker } from "@faker-js/faker";
 import { Image } from "react-native";
 
 import { getRandomVideoUrl } from "@/lib/faker/video-url";
-import type { FeedItem } from "@/schemas/feed-item";
-import type { ImageFeedItem } from "@/schemas/feed-item/image";
-import type { InteractableFeedItem } from "@/schemas/feed-item/interactable";
-import type { VideoFeedItem } from "@/schemas/feed-item/video";
+import type { Post } from "@/schemas/post";
+import type { ImagePost } from "@/schemas/post/image";
+import type { InteractablePost } from "@/schemas/post/interactable";
+import type { VideoPost } from "@/schemas/post/video";
 
-interface FetchFeedItemsRequest {
+interface FetchPostsRequest {
   itemsCount: number;
 }
 
-interface FetchFeedItemsRequestResponse {
-  feedItems: FeedItem[];
+interface FetchPostsRequestResponse {
+  posts: Post[];
 }
 
 const mediaTypes = ["image", "video"] as const;
 
-export async function fetchFeedItems({
+export async function fetchPosts({
   itemsCount,
-}: FetchFeedItemsRequest): Promise<FetchFeedItemsRequestResponse> {
-  const feedItems: FeedItem[] = await Promise.all(
+}: FetchPostsRequest): Promise<FetchPostsRequestResponse> {
+  const posts: Post[] = await Promise.all(
     Array.from({ length: itemsCount }).map(async () => {
-      const interactions: InteractableFeedItem = {
+      const interactions: InteractablePost = {
         likesCount: faker.number.int({ max: 1_000_000 }),
         dislikesCount: faker.number.int({ max: 1_000_000 }),
         commentsCount: faker.number.int({ max: 1_000_000 }),
@@ -42,7 +42,7 @@ export async function fetchFeedItems({
           },
         );
 
-        const item: ImageFeedItem = {
+        const item: ImagePost = {
           ...interactions,
           id: faker.string.uuid(),
           type: "image",
@@ -59,7 +59,7 @@ export async function fetchFeedItems({
       } else {
         const videoUrl = getRandomVideoUrl();
 
-        const item: VideoFeedItem = {
+        const item: VideoPost = {
           ...interactions,
           id: faker.string.uuid(),
           type: "video",
@@ -75,5 +75,5 @@ export async function fetchFeedItems({
     }),
   );
 
-  return { feedItems };
+  return { posts };
 }

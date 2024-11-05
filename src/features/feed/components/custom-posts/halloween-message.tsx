@@ -1,8 +1,8 @@
 import { Text } from "react-native";
 
-import type { CustomFeedItem } from "@/schemas/feed-item/custom";
+import type { CustomPost } from "@/schemas/post/custom";
 
-export const halloween_message: Omit<CustomFeedItem, "id"> = {
+export const halloween_message: Omit<CustomPost, "id"> = {
   criteria: async () => {
     const d = new Date();
     return d.getDate() === 31 && d.getMonth() === 9;

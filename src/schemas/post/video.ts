@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { interactableFeedItemSchema } from "./interactable";
+import { interactablePostSchema } from "./interactable";
 
-export const videoFeedItemSchema = z.intersection(
-  interactableFeedItemSchema,
+export const videoPostSchema = z.intersection(
+  interactablePostSchema,
   z.object({
     id: z.string().uuid(),
     type: z.literal("video"),
@@ -14,4 +14,4 @@ export const videoFeedItemSchema = z.intersection(
   }),
 );
 
-export type VideoFeedItem = z.infer<typeof videoFeedItemSchema>;
+export type VideoPost = z.infer<typeof videoPostSchema>;

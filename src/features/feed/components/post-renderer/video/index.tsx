@@ -2,21 +2,21 @@ import { ResizeMode, Video } from "expo-av";
 import { useEffect, useRef } from "react";
 import { Text } from "react-native";
 
-import type { VideoFeedItem } from "@/schemas/feed-item/video";
+import type { VideoPost } from "@/schemas/post/video";
 
-import { FeedItemControls } from "../../feed-item-controls";
+import { PostControls } from "../../post-controls";
 import { styles } from "./styles";
 
-interface VideoFeedItemRendererProps extends VideoFeedItem {
+interface VideoPostRendererProps extends VideoPost {
   isVisible: boolean;
 }
 
-export function VideoFeedItemRenderer({
+export function VideoPostRenderer({
   author,
   videoUrl,
   isVisible,
   ...interactions
-}: VideoFeedItemRendererProps) {
+}: VideoPostRendererProps) {
   const videoRef = useRef<Video | null>(null);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export function VideoFeedItemRenderer({
         isLooping
         ref={videoRef}
       />
-      <FeedItemControls.Interactions {...interactions} />
+      <PostControls.Interactions {...interactions} />
     </>
   );
 }

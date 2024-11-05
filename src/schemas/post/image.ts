@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { interactableFeedItemSchema } from "./interactable";
+import { interactablePostSchema } from "./interactable";
 
-export const imageFeedItemSchema = z.intersection(
-  interactableFeedItemSchema,
+export const imagePostSchema = z.intersection(
+  interactablePostSchema,
   z.object({
     id: z.string().uuid(),
     type: z.literal("image"),
@@ -16,4 +16,4 @@ export const imageFeedItemSchema = z.intersection(
   }),
 );
 
-export type ImageFeedItem = z.infer<typeof imageFeedItemSchema>;
+export type ImagePost = z.infer<typeof imagePostSchema>;

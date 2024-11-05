@@ -3,18 +3,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 import { fetchPostComments } from "@/features/feed/api/fetch-post-comments";
-import type { InteractableFeedItem } from "@/schemas/feed-item/interactable";
 import type { PostComment } from "@/schemas/post/comment";
+import type { InteractablePost } from "@/schemas/post/interactable";
 
 import { styles } from "./styles";
 
-interface InteractionsFeedItemControl extends InteractableFeedItem {}
+interface InteractionsPostControl extends InteractablePost {}
 
-export function InteractionsFeedItemControl({
+export function InteractionsPostControl({
   likesCount,
   dislikesCount,
   commentsCount,
-}: InteractionsFeedItemControl) {
+}: InteractionsPostControl) {
   const [isLoading, setIsLoading] = useState(false);
   const [comments, setComments] = useState<PostComment[] | null>(null);
   const [commentsContainerIndex, setCommentsContainerIndex] = useState(-1);
