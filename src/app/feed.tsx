@@ -9,6 +9,7 @@ import SwiperFlatList from "react-native-swiper-flatlist";
 import { Loading } from "@/components/loading";
 import type { FeedItem } from "@/schemas/feed-item";
 
+import { Indicator } from "@/components/indicator";
 import { fetchFeedItems } from "@/features/feed/api/fetch-feed-items";
 import { FeedItemRenderer } from "@/features/feed/components/feed-item-renderer";
 import { getRandomCustomFeedItem } from "@/features/feed/get-random-custom-feed-items";
@@ -69,23 +70,32 @@ export function Feed() {
   }
 
   return (
-    <View style={styles.container}>
-      <SwiperFlatList
-        index={index}
-        onChangeIndex={({ index }) => setIndex(index)}
-        data={items}
-        renderItem={({ item, index }: ListRenderItemInfo<FeedItem>) => {
-          return (
-            <View
-              style={[styles.contentContainer, { width: windowWidth }]}
-              key={item.id}
-            >
-              {item.type === "image" && <FeedItemRenderer.Image {...item} />}
-              {item.type === "custom" && item.render()}
-            </View>
-          );
-        }}
-      />
-    </View>
+    <>
+      {isLoading && index + 1 === items.length && (
+        <Indicator.Container position="absolute">
+          <Indicator.Text>
+            Estamos carregando os próximos itens...
+          </Indicator.Text>
+        </Indicator.Container>
+      )}
+      <View style={styles.container}>
+        <SwiperFlatList
+          index={index}
+          onChangeIndex={({ index }) => setIndex(index)}
+          data={items}
+          renderItem={({ item, index }: ListRenderItemInfo<FeedItem>) => {
+            return (
+              <View
+                style={[styles.contentContainer, { width: windowWidth }]}
+                key={item.id}
+              >
+                {item.type === "image" && <FeedItemRenderer.Image {...item} />}
+                {item.type === "custom" && item.render()}
+              </View>
+            );
+          }}
+        />
+      </View>
+    </>
   );
 }

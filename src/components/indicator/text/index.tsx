@@ -5,5 +5,5 @@ import { styles } from "./styles";
 interface IndicatorTextProps extends TextProps {}
 
 export function IndicatorText(props: IndicatorTextProps) {
-  <Text style={styles.text} {...props} />;
+  return <Text style={styles.text} {...props} />;
 }
