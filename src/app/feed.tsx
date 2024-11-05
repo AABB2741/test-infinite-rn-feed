@@ -18,7 +18,7 @@ import { styles } from "./styles";
 export function Feed() {
   const { width: windowWidth } = useWindowDimensions();
 
-  const [index, setIndex] = useState(0);
+  const [feedIndex, setFeedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [items, setItems] = useState<FeedItem[] | null>(null);
 
@@ -49,12 +49,12 @@ export function Feed() {
       return;
     }
 
-    const shouldLoadMoreItems = !items || items.length - index <= 3;
+    const shouldLoadMoreItems = !items || items.length - feedIndex <= 3;
 
     if (shouldLoadMoreItems) {
       loadMoreFeedItems();
     }
-  }, [index, items, isLoading]);
+  }, [feedIndex, items, isLoading]);
 
   if (!items) {
     return (
@@ -71,17 +71,10 @@ export function Feed() {
 
   return (
     <>
-      {isLoading && index + 1 === items.length && (
-        <Indicator.Container position="absolute">
-          <Indicator.Text>
-            Estamos carregando os próximos itens...
-          </Indicator.Text>
-        </Indicator.Container>
-      )}
       <View style={styles.container}>
         <SwiperFlatList
-          index={index}
-          onChangeIndex={({ index }) => setIndex(index)}
+          index={feedIndex}
+          onChangeIndex={({ index }) => setFeedIndex(index)}
           data={items}
           renderItem={({ item, index }: ListRenderItemInfo<FeedItem>) => {
             return (
@@ -90,13 +83,25 @@ export function Feed() {
                 key={item.id}
               >
                 {item.type === "image" && <FeedItemRenderer.Image {...item} />}
-                {item.type === "video" && <FeedItemRenderer.Video {...item} />}
+                {item.type === "video" && (
+                  <FeedItemRenderer.Video
+                    {...item}
+                    isVisible={index === feedIndex}
+                  />
+                )}
                 {item.type === "custom" && item.render()}
               </View>
             );
           }}
         />
       </View>
+      {isLoading && feedIndex + 1 === items.length && (
+        <Indicator.Container position="absolute">
+          <Indicator.Text>
+            Estamos carregando os próximos itens...
+          </Indicator.Text>
+        </Indicator.Container>
+      )}
     </>
   );
 }
