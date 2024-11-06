@@ -1,5 +1,5 @@
 import { ResizeMode, Video } from "expo-av";
-import { memo, useEffect, useRef } from "react";
+import { memo } from "react";
 import { Text } from "react-native";
 
 import type { VideoPost } from "@/schemas/post/video";
@@ -12,28 +12,22 @@ interface VideoPostRendererProps extends VideoPost {
 }
 
 export const VideoPostRenderer = memo<VideoPostRendererProps>(
-  ({ author, videoUrl, isVisible, ...interactions }) => {
-    console.log("Rendering video");
-
-    const videoRef = useRef<Video | null>(null);
-
-    useEffect(() => {
-      if (isVisible) {
-        videoRef.current?.playFromPositionAsync(0)?.catch(console.error);
-      }
-    }, [isVisible]);
+  ({ id, author, videoUrl, isVisible, ...interactions }) => {
+    console.log(`Rendering video: ${id.substring(0, 5)}`);
 
     return (
       <>
-        <Text style={styles.contentAuthor}>{author.name}</Text>
+        <Text style={styles.contentAuthor}>
+          {author.name} ({id.substring(0, 5)})
+        </Text>
         <Video
           source={{ uri: videoUrl }}
           resizeMode={ResizeMode.CONTAIN}
           style={styles.video}
           shouldPlay={isVisible}
+          positionMillis={0}
           useNativeControls
           isLooping
-          ref={videoRef}
         />
         <PostControls.Interactions {...interactions} />
       </>

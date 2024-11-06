@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   useWindowDimensions,
   View,
@@ -54,28 +54,30 @@ export function PostsFeed({
     }
   }, [isNextPageAvailable, currentIndex, loadMargin]);
 
+  const renderInfo = useCallback(
+    ({ item, index }: ListRenderItemInfo<Post>) => (
+      <View
+        style={[styles.contentContainer, { width: feedWidth }]}
+        key={item.id}
+      >
+        {item.type === "image" && <PostRenderer.Image {...item} />}
+        {item.type === "video" && (
+          <PostRenderer.Video {...item} isVisible={index === currentIndex} />
+        )}
+        {item.type === "custom" && item.render()}
+      </View>
+    ),
+    [currentIndex],
+  );
+
   return (
     <>
       <SwiperFlatList
         index={currentIndex}
-        onChangeIndex={({ index, prevIndex }) => setCurrentIndex(index)}
+        onChangeIndex={({ index }) => setCurrentIndex(index)}
         data={posts}
         keyExtractor={(item: Post) => item.id}
-        renderItem={({ item, index }: ListRenderItemInfo<Post>) => (
-          <View
-            style={[styles.contentContainer, { width: feedWidth }]}
-            key={item.id}
-          >
-            {item.type === "image" && <PostRenderer.Image {...item} />}
-            {item.type === "video" && (
-              <PostRenderer.Video
-                {...item}
-                isVisible={index === currentIndex}
-              />
-            )}
-            {item.type === "custom" && item.render()}
-          </View>
-        )}
+        renderItem={renderInfo}
       />
     </>
   );

@@ -10,8 +10,8 @@ import { styles } from "./styles";
 interface ImagePostRendererProps extends ImagePost {}
 
 export const ImagePostRenderer = memo<ImagePostRendererProps>(
-  ({ author, imageUrl, width, height, ...interactions }) => {
-    console.log("Rendering image");
+  ({ id, author, imageUrl, width, height, ...interactions }) => {
+    console.log(`Rendering image: ${id.substring(0, 5)}`);
 
     const { width: windowWidth } = useWindowDimensions();
 
@@ -34,7 +34,9 @@ export const ImagePostRenderer = memo<ImagePostRendererProps>(
 
     return (
       <>
-        <Text style={styles.contentAuthor}>{author.name}</Text>
+        <Text style={styles.contentAuthor}>
+          {author.name} ({id.substring(0, 5)})
+        </Text>
         <ScrollView style={styles.container}>
           <Image
             resizeMode="contain"
