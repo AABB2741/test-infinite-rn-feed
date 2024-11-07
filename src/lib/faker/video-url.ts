@@ -15,7 +15,7 @@ const videoUrls = [
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
   "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-  "",
+  "https://www.w3schools.com/html/mov_bbb.mp4",
 ];
 
 export function getRandomVideoUrl() {

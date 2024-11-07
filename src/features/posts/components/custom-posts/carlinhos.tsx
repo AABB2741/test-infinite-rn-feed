@@ -1,6 +1,5 @@
-import { Audio, type AVPlaybackSource } from "expo-av";
-import type { Sound } from "expo-av/build/Audio";
-import { memo, useEffect, useState } from "react";
+import { type AVPlaybackSource, type AVPlaybackStatusToSet } from "expo-av";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
 import type {
@@ -10,11 +9,13 @@ import type {
 
 import carlinhosJpg from "@/features/posts/assets/carlinhos/carlinhos.jpg";
 import powerOutageMp3 from "@/features/posts/assets/carlinhos/power-outage.mp3";
+import { useSoundEffect } from "../../hooks/use-sound-effect";
 
-const ambienceSoundsImports: (() => AVPlaybackSource)[] = [
-  () => require("@/features/posts/assets/carlinhos/ambience-1.mp3"),
-  () => require("@/features/posts/assets/carlinhos/ambience-2.mp3"),
-  () => require("@/features/posts/assets/carlinhos/ambience-3.mp3"),
+const ambienceSoundsImports: AVPlaybackSource[] = [
+  require("@/features/posts/assets/carlinhos/ambience-1.mp3"),
+  require("@/features/posts/assets/carlinhos/ambience-2.mp3"),
+  require("@/features/posts/assets/carlinhos/ambience-3.mp3"),
+  require("@/features/posts/assets/carlinhos/ambience-4.mp3"),
 ];
 
 const INITIAL_DISTANCE = 10000;
@@ -22,33 +23,33 @@ const INITIAL_DISTANCE = 10000;
 export const CarlinhosCustomPost = memo<CustomPostComponentProps>(
   ({ isVisible }) => {
     const [distance, setDistance] = useState(INITIAL_DISTANCE);
-    const [ambienceSound, setAmbienceSound] = useState<Sound | null>(null);
-    const [powerOutageSound, setPowerOutageSound] = useState<Sound | null>(
-      null,
-    );
 
-    async function playAmbienceSound() {
-      const getAudioSource =
+    const ambienceAudioSource = useMemo(
+      () =>
         ambienceSoundsImports[
           Math.round(Math.random() * (ambienceSoundsImports.length - 1))
-        ];
+        ],
+      [isVisible],
+    );
 
-      const { sound } = await Audio.Sound.createAsync(getAudioSource());
+    const ambienceAudioProps = useMemo<AVPlaybackStatusToSet>(
+      () => ({ shouldPlay: isVisible }),
+      [isVisible],
+    );
 
-      setAmbienceSound(sound);
-
-      await sound.playAsync();
-    }
+    const ambienceAudio = useSoundEffect(
+      ambienceAudioSource,
+      ambienceAudioProps,
+    );
+    const powerOutageAudio = useSoundEffect(powerOutageMp3);
 
     useEffect(() => {
       if (!isVisible) {
         setDistance(INITIAL_DISTANCE);
-        powerOutageSound?.stopAsync();
-        ambienceSound?.stopAsync();
+        ambienceAudio?.sound.stopAsync();
+        powerOutageAudio?.sound.stopAsync();
         return;
       }
-
-      playAmbienceSound();
       const interval = setInterval(
         () =>
           setDistance((prevState) => {
@@ -57,7 +58,7 @@ export const CarlinhosCustomPost = memo<CustomPostComponentProps>(
               return 0;
             }
 
-            return prevState - 10;
+            return prevState - 12;
           }),
         1,
       );
@@ -67,11 +68,8 @@ export const CarlinhosCustomPost = memo<CustomPostComponentProps>(
 
     useEffect(() => {
       if (distance <= 0) {
-        ambienceSound?.stopAsync();
-        Audio.Sound.createAsync(powerOutageMp3).then(({ sound }) => {
-          setPowerOutageSound(sound);
-          sound.playAsync();
-        });
+        ambienceAudio?.sound.stopAsync();
+        powerOutageAudio?.sound.playAsync();
       }
     }, [distance]);
 
@@ -81,17 +79,17 @@ export const CarlinhosCustomPost = memo<CustomPostComponentProps>(
         {distance > 0 && (
           <Text style={styles.text}>
             Carlinhos está a <Text style={styles.bold}>{distance} metros</Text>{" "}
-            de distância até você.
+            de distância até a sua localização. (Ele está se aproximando).
           </Text>
         )}
-        {distance <= 0 && <Text style={styles.text}>Não olhe para trás.</Text>}
+        {distance <= 0 && <Text style={styles.text}>Ele está aqui.</Text>}
       </View>
     );
   },
 );
 
 export const carlinhos: Omit<CustomPost, "id"> = {
-  criteria: async () => Math.random() >= 0.5,
+  criteria: async () => Math.random() >= 0,
   type: "custom",
   Component: CarlinhosCustomPost,
 };
