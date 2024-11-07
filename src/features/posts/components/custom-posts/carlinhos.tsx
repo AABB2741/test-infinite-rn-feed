@@ -1,4 +1,4 @@
-import { type AVPlaybackSource, type AVPlaybackStatusToSet } from "expo-av";
+import { type AVPlaybackSource } from "expo-av";
 import { memo, useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
@@ -8,7 +8,6 @@ import type {
 } from "@/schemas/post/custom";
 
 import carlinhosJpg from "@/features/posts/assets/carlinhos/carlinhos.jpg";
-import powerOutageMp3 from "@/features/posts/assets/carlinhos/power-outage.mp3";
 import { useSoundEffect } from "../../hooks/use-sound-effect";
 
 const ambienceSoundsImports: AVPlaybackSource[] = [
@@ -21,7 +20,7 @@ const ambienceSoundsImports: AVPlaybackSource[] = [
 const INITIAL_DISTANCE = 10000;
 
 export const CarlinhosCustomPost = memo<CustomPostComponentProps>(
-  ({ isVisible }) => {
+  ({ isVisible, onRequestNextPost }) => {
     const [distance, setDistance] = useState(INITIAL_DISTANCE);
 
     const ambienceAudioSource = useMemo(
@@ -32,24 +31,20 @@ export const CarlinhosCustomPost = memo<CustomPostComponentProps>(
       [isVisible],
     );
 
-    const ambienceAudioProps = useMemo<AVPlaybackStatusToSet>(
-      () => ({ shouldPlay: isVisible }),
-      [isVisible],
-    );
-
-    const ambienceAudio = useSoundEffect(
-      ambienceAudioSource,
-      ambienceAudioProps,
-    );
-    const powerOutageAudio = useSoundEffect(powerOutageMp3);
+    const ambienceSound = useSoundEffect(ambienceAudioSource);
 
     useEffect(() => {
       if (!isVisible) {
-        setDistance(INITIAL_DISTANCE);
-        ambienceAudio?.sound.stopAsync();
-        powerOutageAudio?.sound.stopAsync();
+        ambienceSound?.stopAsync();
         return;
       }
+
+      if (distance > 0) {
+        ambienceSound
+          ?.playAsync()
+          .catch((err) => console.error("Não foi possível tocar o áudio", err));
+      }
+
       const interval = setInterval(
         () =>
           setDistance((prevState) => {
@@ -68,19 +63,22 @@ export const CarlinhosCustomPost = memo<CustomPostComponentProps>(
 
     useEffect(() => {
       if (distance <= 0) {
-        ambienceAudio?.sound.stopAsync();
-        powerOutageAudio?.sound.playAsync();
+        ambienceSound?.stopAsync();
+        onRequestNextPost?.();
       }
     }, [distance]);
 
     return (
-      <View style={[styles.container, distance <= 0 && styles.redContainer]}>
-        {distance > 0 && <Image style={styles.image} source={carlinhosJpg} />}
+      <View style={[styles.container]}>
         {distance > 0 && (
-          <Text style={styles.text}>
-            Carlinhos está a <Text style={styles.bold}>{distance} metros</Text>{" "}
-            de distância até a sua localização. (Ele está se aproximando).
-          </Text>
+          <>
+            <Image style={styles.image} source={carlinhosJpg} />
+            <Text style={styles.text}>
+              Carlinhos está a{" "}
+              <Text style={styles.bold}>{distance} metros</Text> de distância
+              até a sua localização. (Ele está se aproximando).
+            </Text>
+          </>
         )}
         {distance <= 0 && <Text style={styles.text}>Ele está aqui.</Text>}
       </View>
@@ -89,7 +87,7 @@ export const CarlinhosCustomPost = memo<CustomPostComponentProps>(
 );
 
 export const carlinhos: Omit<CustomPost, "id"> = {
-  criteria: async () => Math.random() >= 0,
+  criteria: async () => Math.random() >= 0.5,
   type: "custom",
   Component: CarlinhosCustomPost,
 };
@@ -101,9 +99,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 24,
-  },
-  redContainer: {
-    backgroundColor: "red",
   },
   image: {
     width: 200,

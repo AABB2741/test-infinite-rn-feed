@@ -15,7 +15,7 @@ export function Feed() {
 
   const loadMorePosts = useCallback(async () => {
     const { posts: newPosts } = await fetchPosts({
-      itemsCount: 1,
+      itemsCount: 10,
     });
     const customPost = await getRandomCustomPost();
 

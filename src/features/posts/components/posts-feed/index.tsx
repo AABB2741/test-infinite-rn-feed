@@ -66,11 +66,16 @@ export function PostsFeed({
           <PostRenderer.Video {...item} isVisible={index === currentIndex} />
         )}
         {item.type === "custom" && (
-          <item.Component isVisible={index === currentIndex} />
+          <item.Component
+            isVisible={index === currentIndex}
+            onRequestNextPost={() =>
+              postsFeedRef.current?.scrollToIndex({ index: currentIndex + 1 })
+            }
+          />
         )}
       </View>
     ),
-    [currentIndex],
+    [currentIndex, postsFeedRef],
   );
 
   return (
