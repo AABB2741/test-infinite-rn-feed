@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { Image } from "react-native";
 
+import { getRandomImageUrl } from "@/lib/faker/image-url";
 import { getRandomVideoUrl } from "@/lib/faker/video-url";
 import type { Post } from "@/schemas/post";
 import type { ImagePost } from "@/schemas/post/image";
@@ -34,7 +35,11 @@ export async function fetchPosts(
       const mediaType = faker.helpers.arrayElement(mediaTypes);
 
       if (mediaType === "image") {
-        const imageUrl = faker.image.url();
+        const shouldUseCustomImage = faker.datatype.boolean();
+
+        const imageUrl = shouldUseCustomImage
+          ? getRandomImageUrl()
+          : faker.image.url();
 
         const [width, height] = await new Promise<[number, number]>(
           (resolve, reject) => {
