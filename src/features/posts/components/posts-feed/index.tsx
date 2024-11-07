@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useWindowDimensions,
   View,
@@ -38,6 +38,7 @@ export function PostsFeed({
 }: PostsFeedProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const postsFeedRef = useRef<SwiperFlatList | null>(null);
   const { width: windowWidth } = useWindowDimensions();
 
   const feedWidth = useMemo(() => width ?? windowWidth, [width, windowWidth]);
@@ -64,7 +65,9 @@ export function PostsFeed({
         {item.type === "video" && (
           <PostRenderer.Video {...item} isVisible={index === currentIndex} />
         )}
-        {item.type === "custom" && item.render()}
+        {item.type === "custom" && (
+          <item.Component isVisible={index === currentIndex} />
+        )}
       </View>
     ),
     [currentIndex],
@@ -78,6 +81,7 @@ export function PostsFeed({
         data={posts}
         keyExtractor={(item: Post) => item.id}
         renderItem={renderInfo}
+        ref={postsFeedRef}
       />
     </>
   );

@@ -3,9 +3,10 @@ import { View } from "react-native";
 
 import { Loading } from "@/components/loading";
 import { fetchPosts } from "@/features/posts/api/fetch-posts";
+import { PostsFeed } from "@/features/posts/components/posts-feed";
+import { getRandomCustomPost } from "@/features/posts/get-random-custom-post";
 import type { Post } from "@/schemas/post";
 
-import { PostsFeed } from "@/features/posts/components/posts-feed";
 import { styles } from "./styles";
 
 export function Feed() {
@@ -13,11 +14,22 @@ export function Feed() {
   const [posts, setPosts] = useState<Post[] | null>(null);
 
   const loadMorePosts = useCallback(async () => {
-    const { posts: newPosts } = await fetchPosts();
+    const { posts: newPosts } = await fetchPosts({
+      itemsCount: 10,
+    });
+    const customPost = await getRandomCustomPost();
 
-    setPosts((prevState) =>
-      prevState ? [...prevState, ...newPosts] : newPosts,
-    );
+    setPosts((prevState) => {
+      const res = prevState ? [...prevState] : [];
+
+      res.push(...newPosts);
+
+      if (customPost) {
+        res.push(customPost);
+      }
+
+      return res;
+    });
   }, []);
 
   useEffect(() => {

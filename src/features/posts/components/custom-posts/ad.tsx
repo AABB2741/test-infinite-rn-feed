@@ -5,7 +5,7 @@ import type { CustomPost } from "@/schemas/post/custom";
 export const ad: Omit<CustomPost, "id"> = {
   criteria: async () => Math.random() >= 0.5,
   type: "custom",
-  render: AdCustomPost,
+  Component: AdCustomPost,
 };
 
 export function AdCustomPost() {

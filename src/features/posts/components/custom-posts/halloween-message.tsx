@@ -8,7 +8,7 @@ export const halloween_message: Omit<CustomPost, "id"> = {
     return d.getDate() === 31 && d.getMonth() === 9;
   },
   type: "custom",
-  render: HalloweenMessage,
+  Component: HalloweenMessage,
 };
 
 export function HalloweenMessage() {
