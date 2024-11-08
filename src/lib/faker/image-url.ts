@@ -16,6 +16,9 @@ const imageUrls = [
   "https://rpbcompany.com.br/static/13.jpg",
   "https://rpbcompany.com.br/static/14.jpg",
   "https://rpbcompany.com.br/static/15.jpg",
+  "https://rpbcompany.com.br/static/16.jpg",
+  "https://rpbcompany.com.br/static/17.jpg",
+  "https://rpbcompany.com.br/static/18.jpg",
 ];
 
 export function getRandomImageUrl() {

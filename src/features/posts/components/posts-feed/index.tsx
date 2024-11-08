@@ -61,9 +61,15 @@ export function PostsFeed({
         style={[styles.contentContainer, { width: feedWidth }]}
         key={item.id}
       >
-        {item.type === "image" && <PostRenderer.Image {...item} />}
+        {item.type === "image" && (
+          <PostRenderer.Image index={index} {...item} />
+        )}
         {item.type === "video" && (
-          <PostRenderer.Video {...item} isVisible={index === currentIndex} />
+          <PostRenderer.Video
+            index={index}
+            {...item}
+            isVisible={index === currentIndex}
+          />
         )}
         {item.type === "custom" && (
           <item.Component

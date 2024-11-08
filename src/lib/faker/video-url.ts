@@ -36,6 +36,11 @@ const videoUrls = [
   "https://rpbcompany.com.br/static/18.mp4",
   "https://rpbcompany.com.br/static/19.mp4",
   "https://rpbcompany.com.br/static/20.mp4",
+  "https://rpbcompany.com.br/static/21.mp4",
+  "https://rpbcompany.com.br/static/22.mp4",
+  "https://rpbcompany.com.br/static/23.mp4",
+  "https://rpbcompany.com.br/static/24.mp4",
+  "https://rpbcompany.com.br/static/25.mp4",
 ];
 
 export function getRandomVideoUrl() {

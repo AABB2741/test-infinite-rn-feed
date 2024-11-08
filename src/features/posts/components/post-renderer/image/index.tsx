@@ -7,10 +7,12 @@ import { resize } from "@/utils/resize";
 import { PostControls } from "../../post-controls";
 import { styles } from "./styles";
 
-interface ImagePostRendererProps extends ImagePost {}
+interface ImagePostRendererProps extends ImagePost {
+  index: number;
+}
 
 export const ImagePostRenderer = memo<ImagePostRendererProps>(
-  ({ id, author, imageUrl, width, height, ...interactions }) => {
+  ({ id, author, imageUrl, width, height, index, ...interactions }) => {
     console.log(`Rendering image: ${id.substring(0, 5)}`);
 
     const { width: windowWidth } = useWindowDimensions();
@@ -35,7 +37,7 @@ export const ImagePostRenderer = memo<ImagePostRendererProps>(
     return (
       <>
         <Text style={styles.contentAuthor}>
-          {author.name} ({id.substring(0, 5)})
+          #{index} {author.name} ({id.substring(0, 5)})
         </Text>
         <ScrollView style={styles.container}>
           <Image

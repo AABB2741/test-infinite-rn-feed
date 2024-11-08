@@ -9,16 +9,17 @@ import { styles } from "./styles";
 
 interface VideoPostRendererProps extends VideoPost {
   isVisible: boolean;
+  index: number;
 }
 
 export const VideoPostRenderer = memo<VideoPostRendererProps>(
-  ({ id, author, videoUrl, isVisible, ...interactions }) => {
+  ({ id, author, videoUrl, isVisible, index, ...interactions }) => {
     console.log(`Rendering video: ${id.substring(0, 5)}`);
 
     return (
       <>
         <Text style={styles.contentAuthor}>
-          {author.name} ({id.substring(0, 5)})
+          #{index} {author.name} ({id.substring(0, 5)})
         </Text>
         <Video
           source={{ uri: videoUrl }}
