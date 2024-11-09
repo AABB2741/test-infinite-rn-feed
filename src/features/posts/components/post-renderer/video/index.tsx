@@ -1,6 +1,6 @@
 import { ResizeMode, Video } from "expo-av";
 import { memo, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import type { VideoPost } from "@/schemas/post/video";
 
@@ -18,9 +18,7 @@ export const VideoPostRenderer = memo<VideoPostRendererProps>(
 
     return (
       <View style={styles.container}>
-        <Text style={styles.contentAuthor}>
-          {author.name} ({id.substring(0, 5)})
-        </Text>
+        <PostControls.Author avatarUrl={author.avatarUrl} name={author.name} />
         <Video
           source={{ uri: videoUrl }}
           resizeMode={ResizeMode.CONTAIN}

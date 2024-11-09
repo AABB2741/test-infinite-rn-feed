@@ -7,6 +7,7 @@ export const imagePostSchema = z.intersection(
     id: z.string().uuid(),
     type: z.literal("image"),
     author: z.object({
+      avatarUrl: z.string().url(),
       name: z.string(),
       id: z.string().uuid(),
     }),

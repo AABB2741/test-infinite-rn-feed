@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Image, ScrollView, Text } from "react-native";
+import { Image, ScrollView } from "react-native";
 
 import type { ImagePost } from "@/schemas/post/image";
 
@@ -14,9 +14,7 @@ export const ImagePostRenderer = memo<ImagePostRendererProps>(
 
     return (
       <>
-        <Text style={styles.contentAuthor}>
-          {author.name} ({id.substring(0, 5)})
-        </Text>
+        <PostControls.Author avatarUrl={author.avatarUrl} name={author.name} />
         <ScrollView style={styles.container}>
           <Image
             resizeMode="contain"

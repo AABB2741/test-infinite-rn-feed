@@ -56,6 +56,7 @@ export async function fetchPosts(
           id: faker.string.uuid(),
           type: "image",
           author: {
+            avatarUrl: faker.image.avatar(),
             id: faker.string.uuid(),
             name: faker.person.fullName(),
           },
@@ -73,6 +74,7 @@ export async function fetchPosts(
           id: faker.string.uuid(),
           type: "video",
           author: {
+            avatarUrl: faker.image.avatar(),
             id: faker.string.uuid(),
             name: faker.person.fullName(),
           },
