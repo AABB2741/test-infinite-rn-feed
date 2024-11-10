@@ -1,6 +1,6 @@
 import { ResizeMode, Video } from "expo-av";
-import { memo } from "react";
-import { Text } from "react-native";
+import { memo, useState } from "react";
+import { View } from "react-native";
 
 import type { VideoPost } from "@/schemas/post/video";
 
@@ -15,23 +15,25 @@ interface VideoPostRendererProps extends VideoPost {
 export const VideoPostRenderer = memo<VideoPostRendererProps>(
   ({ id, author, videoUrl, isVisible, index, ...interactions }) => {
     console.log(`Rendering video: ${id.substring(0, 5)}`);
+    const [videoAspectRatio, setVideoAspectRatio] = useState<number>();
 
     return (
-      <>
-        <Text style={styles.contentAuthor}>
-          #{index} {author.name} ({id.substring(0, 5)})
-        </Text>
+      <View style={styles.container}>
+        <PostControls.Author avatarUrl={author.avatarUrl} name={author.name} />
         <Video
           source={{ uri: videoUrl }}
           resizeMode={ResizeMode.CONTAIN}
-          style={styles.video}
+          style={[styles.video, { aspectRatio: videoAspectRatio }]}
           shouldPlay={isVisible}
           positionMillis={0}
           useNativeControls
           isLooping
+          onReadyForDisplay={({ naturalSize }) => {
+            setVideoAspectRatio(naturalSize.width / naturalSize.height);
+          }}
         />
         <PostControls.Interactions {...interactions} />
-      </>
+      </View>
     );
   },
 );

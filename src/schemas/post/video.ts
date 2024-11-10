@@ -8,6 +8,7 @@ export const videoPostSchema = z.intersection(
     type: z.literal("video"),
     videoUrl: z.string().url(),
     author: z.object({
+      avatarUrl: z.string().url(),
       name: z.string(),
       id: z.string().uuid(),
     }),
