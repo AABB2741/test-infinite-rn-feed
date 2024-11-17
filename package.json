@@ -9,6 +9,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@memeboat/tsconfig": "workspace:*",
+    "@memeboat/eslint-config": "workspace:*",
     "@faker-js/faker": "^9.1.0",
     "@gorhom/bottom-sheet": "5",
     "@react-native-community/slider": "4.5.2",
