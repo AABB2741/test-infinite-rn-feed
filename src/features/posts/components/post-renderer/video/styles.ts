@@ -10,9 +10,18 @@ export const styles = StyleSheet.create({
     overflow: "hidden",
   },
   contentAuthor: {},
+  videoContainer: {
+    width: "100%",
+    minHeight: 1,
+    flexShrink: 1,
+  },
   video: {
     width: "100%",
     minHeight: 1,
     flexShrink: 1,
+  },
+  slider: {
+    width: "100%",
+    height: 30,
   },
 });
